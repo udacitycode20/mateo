@@ -1,0 +1,679 @@
+  #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/check_images.py
+#
+# TODO 0: Add your information below for Programmer & Date Created.                                                                             
+# PROGRAMMER: Mateo Garcia
+# DATE CREATED: 01/26/20                             
+# REVISED DATE: 
+# PURPOSE: Classifies pet images using a pretrained CNN model, compares these
+#          classifications to the true identity of the pets in the images, and
+#          summarizes how well the CNN performed on the image classification task. 
+#          Note that the true identity of the pet (or object) in the image is 
+#          indicated by the filename of the image. Therefore, your program must
+#          first extract the pet image label from the filename before
+#          classifying the images using the pretrained CNN model. With this 
+#          program we will be comparing the performance of 3 different CNN model
+#          architectures to determine which provides the 'best' classification.
+#
+# Use argparse Expected Call with <> indicating expected user input:
+#      python check_images.py --dir <directory with images> --arch <model>
+#             --dogfile <file that contains dognames>
+#   Example call:
+#    python check_images.py --dir pet_images/ --arch vgg --dogfile dognames.txt
+##
+
+# Imports python modules
+from time import time, sleep
+
+# Imports print functions that check the lab
+from print_functions_for_lab_checks import *
+
+# Imports functions created for this program
+from get_input_args import get_input_args
+from get_pet_labels import get_pet_labels
+from classify_images import classify_images
+from adjust_results4_isadog import adjust_results4_isadog
+from calculates_results_stats import calculates_results_stats
+from print_results import print_results
+
+# Main program function defined below
+def main():
+    
+    start_time = time()
+    
+    
+    in_arg = get_input_args()
+
+        check_command_line_arguments(in_arg)
+
+    
+   
+    results = get_pet_labels(None)
+
+        
+    check_creating_pet_image_labels(results)
+
+
+   
+    classify_images(None, results, None)
+
+    
+    check_classifying_images(results)    
+
+    
+     
+    adjust_results4_isadog(results, None)
+
+        check_classifying_labels_as_dogs(results)
+
+
+    
+    results_stats = calculates_results_stats(results)
+
+    
+    check_calculating_results(results, results_stats)
+
+
+    
+    print_results(results, results_stats, None, True, True)
+    
+    
+    end_time = time()
+    
+    
+    tot_time = end_time - start_time
+    print("\n** Total Elapsed Runtime:",
+          str(int((tot_time/3600)))+":"+str(int((tot_time%3600)/60))+":"
+          +str(int((tot_time%3600)%60)) )
+    
+
+# Call to main function to run the program
+if __name__ == "__main__":
+    main()
+
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/print_results.py
+#                                                                             
+# PROGRAMMER: 
+# DATE CREATED:
+# REVISED DATE: 
+# PURPOSE: Create a function print_results that prints the results statistics
+#          from the results statistics dictionary (results_stats_dic). It 
+#          should also allow the user to be able to print out cases of misclassified
+#          dogs and cases of misclassified breeds of dog using the Results 
+#          dictionary (results_dic).  
+#         This function inputs:
+#            -The results dictionary as results_dic within print_results 
+#             function and results for the function call within main.
+#            -The results statistics dictionary as results_stats_dic within 
+#             print_results function and results_stats for the function call within main.
+#            -The CNN model architecture as model wihtin print_results function
+#             and in_arg.arch for the function call within main. 
+#            -Prints Incorrectly Classified Dogs as print_incorrect_dogs within
+#             print_results function and set as either boolean value True or 
+#             False in the function call within main (defaults to False)
+#            -Prints Incorrectly Classified Breeds as print_incorrect_breed within
+#             print_results function and set as either boolean value True or 
+#             False in the function call within main (defaults to False)
+#         This function does not output anything other than printing a summary
+#         of the final results.
+##
+# TODO 6: Define print_results function below, specifically replace the None
+#       below by the function definition of the print_results function. 
+#       Notice that this function doesn't to return anything because it  
+#       prints a summary of the results using results_dic and results_stats_dic
+# 
+def print_results(results_dic, results_stats_dic, model, 
+                  print_incorrect_dogs = False, print_incorrect_breed = False):
+    """
+    Prints summary results on the classification and then prints incorrectly 
+    classified dogs and incorrectly classified dog breeds if user indicates 
+    they want those printouts (use non-default values)
+    Parameters:
+      results_dic - Dictionary with key as image filename and value as a List 
+             (index)idx 0 = pet image label (string)
+                    idx 1 = classifier label (string)
+                    idx 2 = 1/0 (int)  where 1 = match between pet image and 
+                            classifer labels and 0 = no match between labels
+                    idx 3 = 1/0 (int)  where 1 = pet image 'is-a' dog and 
+                            0 = pet Image 'is-NOT-a' dog. 
+                    idx 4 = 1/0 (int)  where 1 = Classifier classifies image 
+                            'as-a' dog and 0 = Classifier classifies image  
+                            'as-NOT-a' dog.
+      results_stats_dic - Dictionary that contains the results statistics (either
+                   a  percentage or a count) where the key is the statistic's 
+                     name (starting with 'pct' for percentage or 'n' for count)
+                     and the value is the statistic's value 
+      model - Indicates which CNN model architecture will be used by the 
+              classifier function to classify the pet images,
+              values must be either: resnet alexnet vgg (string)
+      print_incorrect_dogs - True prints incorrectly classified dog images and 
+                             False doesn't print anything(default) (bool)  
+      print_incorrect_breed - True prints incorrectly classified dog breeds and 
+                              False doesn't print anything(default) (bool) 
+    Returns:
+           None - simply printing results.
+    """    
+    
+    print("\n\n*** Results Summary for CNN Model Architecture",model.upper(), 
+          "***")
+    print("{:20}: {:3d}".format('N Images', results_stats_dic['n_images']))
+    print("{:20}: {:3d}".format('N Dog Images', results_stats_dic['n_dogs_img']))
+
+    
+    print("")
+
+
+    
+    print(" ")
+    for key in results_stats_dic:
+        
+        pass 
+
+
+    
+    if (print_incorrect_dogs and 
+        ( (results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs'])
+          != results_stats_dic['n_images'] ) 
+       ):
+        print("\nINCORRECT Dog/NOT Dog Assignments:")
+
+       
+        for key in results_dic:
+
+           
+            pass
+
+                        
+    if (print_incorrect_breed and 
+        (results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']) 
+       ):
+        print("\nINCORRECT Dog Breed Assignment:")
+
+        
+        for key in results_dic:
+
+            
+            if ( sum(results_dic[key][3:]) == 2 and
+                results_dic[key][2] == 0 ):
+                print("Real: {:>26}   Classifier: {:>30}".format(results_dic[key][0],
+                                                          results_dic[key][1]))
+
+    None
+                
+
+!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/calculates_results_stats.py
+#                                                                             
+# PROGRAMMER:
+# DATE CREATED:                                  
+# REVISED DATE: 
+# PURPOSE: Create a function calculates_results_stats that calculates the 
+#          statistics of the results of the programrun using the classifier's model 
+#          architecture to classify the images. This function will use the 
+#          results in the results dictionary to calculate these statistics. 
+#          This function will then put the results statistics in a dictionary
+#          (results_stats_dic) that's created and returned by this function.
+#          This will allow the user of the program to determine the 'best' 
+#          model for classifying the images. The statistics that are calculated
+#          will be counts and percentages. Please see "Intro to Python - Project
+#          classifying Images - xx Calculating Results" for details on the 
+#          how to calculate the counts and percentages for this function.    
+#         This function inputs:
+#            -The results dictionary as results_dic within calculates_results_stats 
+#             function and results for the function call within main.
+#         This function creates and returns the Results Statistics Dictionary -
+#          results_stats_dic. This dictionary contains the results statistics 
+#          (either a percentage or a count) where the key is the statistic's 
+#           name (starting with 'pct' for percentage or 'n' for count) and value 
+#          is the statistic's value.  This dictionary should contain the 
+#          following keys:
+#            n_images - number of images
+#            n_dogs_img - number of dog images
+#            n_notdogs_img - number of NON-dog images
+#            n_match - number of matches between pet & classifier labels
+#            n_correct_dogs - number of correctly classified dog images
+#            n_correct_notdogs - number of correctly classified NON-dog images
+#            n_correct_breed - number of correctly classified dog breeds
+#            pct_match - percentage of correct matches
+#            pct_correct_dogs - percentage of correctly classified dogs
+#            pct_correct_breed - percentage of correctly classified dog breeds
+#            pct_correct_notdogs - percentage of correctly classified NON-dogs
+#
+##
+# TODO 5: Define calculates_results_stats function below, please be certain to replace None
+#       in the return statement with the results_stats_dic dictionary that you create 
+#       with this function
+# 
+def calculates_results_stats(results_dic):
+    """
+    Calculates statistics of the results of the program run using classifier's model 
+    architecture to classifying pet images. Then puts the results statistics in a 
+    dictionary (results_stats_dic) so that it's returned for printing as to help
+    the user to determine the 'best' model for classifying images. Note that 
+    the statistics calculated as the results are either percentages or counts.
+    Parameters:
+      results_dic - Dictionary with key as image filename and value as a List 
+             (index)idx 0 = pet image label (string)
+                    idx 1 = classifier label (string)
+                    idx 2 = 1/0 (int)  where 1 = match between pet image and 
+                            classifer labels and 0 = no match between labels
+                    idx 3 = 1/0 (int)  where 1 = pet image 'is-a' dog and 
+                            0 = pet Image 'is-NOT-a' dog. 
+                    idx 4 = 1/0 (int)  where 1 = Classifier classifies image 
+                            'as-a' dog and 0 = Classifier classifies image  
+                            'as-NOT-a' dog.
+    Returns:
+     results_stats_dic - Dictionary that contains the results statistics (either
+                    a percentage or a count) where the key is the statistic's 
+                     name (starting with 'pct' for percentage or 'n' for count)
+                     and the value is the statistic's value. See comments above
+                     and the previous topic Calculating Results in the class for details
+                     on how to calculate the counts and statistics.
+    """        
+    
+    results_stats_dic = dict()
+    
+    
+    results_stats_dic['n_dogs_img'] = 0
+    results_stats_dic['n_match'] = 0
+    results_stats_dic['n_correct_dogs'] = 0
+    results_stats_dic['n_correct_notdogs'] = 0
+    results_stats_dic['n_correct_breed'] = 0       
+    
+    
+    for key in results_dic:
+         
+        
+        if results_dic[key][2] == 1:
+            results_stats_dic['n_match'] += 1
+
+        pass
+        
+        
+        if results_dic[key][3] == 1:
+            results_stats_dic['n_dogs_img'] += 1
+            
+            
+            if results_dic[key][4] == 1:
+                results_stats_dic['n_correct_dogs'] += 1
+
+       
+        else:
+            
+            pass
+
+
+    
+    
+    
+    results_stats_dic['n_images'] = len(results_dic)
+
+        results_stats_dic['n_notdogs_img'] = (results_stats_dic['n_images'] - 
+                                      results_stats_dic['n_dogs_img']) 
+
+    
+    results_stats_dic['pct_match'] = 0.0
+
+    
+    results_stats_dic['pct_correct_dogs'] = 0.0
+
+
+    
+    results_stats_dic['pct_correct_breed'] = 0.0
+
+        if results_stats_dic['n_notdogs_img'] > 0:
+        results_stats_dic['pct_correct_notdogs'] = (results_stats_dic['n_correct_notdogs'] /
+                                                results_stats_dic['n_notdogs_img'])*100.0
+    else:
+        results_stats_dic['pct_correct_notdogs'] = 0.0
+
+        
+    
+    return results_stats_dic
+    
+    
+    
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/adjust_results4_isadog.py
+#                                                                             
+# PROGRAMMER: 
+# DATE CREATED:                                 
+# REVISED DATE: 
+# PURPOSE: Create a function adjust_results4_isadog that adjusts the results 
+#          dictionary to indicate whether or not the pet image label is of-a-dog, 
+#          and to indicate whether or not the classifier image label is of-a-dog.
+#          All dog labels from both the pet images and the classifier function
+#          will be found in the dognames.txt file. We recommend reading all the
+#          dog names in dognames.txt into a dictionary where the 'key' is the 
+#          dog name (from dognames.txt) and the 'value' is one. If a label is 
+#          found to exist within this dictionary of dog names then the label 
+#          is of-a-dog, otherwise the label isn't of a dog. Alternatively one 
+#          could also read all the dog names into a list and then if the label
+#          is found to exist within this list - the label is of-a-dog, otherwise
+#          the label isn't of a dog. 
+#         This function inputs:
+#            -The results dictionary as results_dic within adjust_results4_isadog 
+#             function and results for the function call within main.
+#            -The text file with dog names as dogfile within adjust_results4_isadog
+#             function and in_arg.dogfile for the function call within main. 
+#           This function uses the extend function to add items to the list 
+#           that's the 'value' of the results dictionary. You will be adding the
+#           whether or not the pet image label is of-a-dog as the item at index
+#           3 of the list and whether or not the classifier label is of-a-dog as
+#           the item at index 4 of the list. Note we recommend setting the values
+#           at indices 3 & 4 to 1 when the label is of-a-dog and to 0 when the 
+#           label isn't a dog.
+#
+##
+# 
+# 
+def adjust_results4_isadog(results_dic, dogfile):
+    """
+    Adjusts the results dictionary to determine if classifier correctly 
+    classified images 'as a dog' or 'not a dog' especially when not a match. 
+    Demonstrates if model architecture correctly classifies dog images even if
+    it gets dog breed wrong (not a match).
+    Parameters:
+      results_dic - Dictionary with 'key' as image filename and 'value' as a 
+                    List. Where the list will contain the following items: 
+                  index 0 = pet image label (string)
+                  index 1 = classifier label (string)
+                  index 2 = 1/0 (int)  where 1 = match between pet image
+                    and classifer labels and 0 = no match between labels
+                ------ where index 3 & index 4 are added by this function -----
+                 NEW - index 3 = 1/0 (int)  where 1 = pet image 'is-a' dog and 
+                            0 = pet Image 'is-NOT-a' dog. 
+                 NEW - index 4 = 1/0 (int)  where 1 = Classifier classifies image 
+                            'as-a' dog and 0 = Classifier classifies image  
+                            'as-NOT-a' dog.
+     dogfile - A text file that contains names of all dogs from the classifier
+               function and dog names from the pet image files. This file has 
+               one dog name per line dog names are all in lowercase with 
+               spaces separating the distinct words of the dog name. Dog names
+               from the classifier function can be a string of dog names separated
+               by commas when a particular breed of dog has multiple dog names 
+               associated with that breed (ex. maltese dog, maltese terrier, 
+               maltese) (string - indicates text file's filename)
+    Returns:
+           None - results_dic is mutable data type so no return needed.
+    """           
+   
+    dognames_dic = dict()
+
+    
+    with open(dogfile, "r") as infile:
+        
+        line = infile.readline()
+
+        
+        while line != "":
+
+            
+            pass
+
+            
+            pass 
+
+            
+            line = infile.readline()
+
+                
+   
+    for key in results_dic:
+
+        
+        if results_dic[key][0] in dognames_dic:
+            
+            
+            if results_dic[key][1] in dognames_dic:
+                results_dic[key].extend((1, 1))
+
+            
+            else:
+                results_dic[key].extend((1, 0))
+
+                else:
+            
+            if results_dic[key][1] in dognames_dic:
+                results_dic[key].extend((0, 1))
+
+            
+            else:
+                results_dic[key].extend((0, 0))
+    
+          return none
+
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/classify_images.py
+#                                                                             
+# PROGRAMMER: 
+# DATE CREATED:                                 
+# REVISED DATE: 
+# PURPOSE: Create a function classify_images that uses the classifier function 
+#          to create the classifier labels and then compares the classifier 
+#          labels to the pet image labels. This function inputs:
+#            -The Image Folder as image_dir within classify_images and function 
+#             and as in_arg.dir for function call within main. 
+#            -The results dictionary as results_dic within classify_images 
+#             function and results for the functin call within main.
+#            -The CNN model architecture as model wihtin classify_images function
+#             and in_arg.arch for the function call within main. 
+#           This function uses the extend function to add items to the list 
+#           that's the 'value' of the results dictionary. You will be adding the
+#           classifier label as the item at index 1 of the list and the comparison 
+#           of the pet and classifier labels as the item at index 2 of the list.
+#
+##
+# Imports classifier function for using CNN to classify images 
+from classifier import classifier 
+
+# TODO 3: Define classify_images function below, specifically replace the None
+#       below by the function definition of the classify_images function. 
+#       Notice that this function doesn't return anything because the 
+#       results_dic dictionary that is passed into the function is a mutable 
+#       data type so no return is needed.
+# 
+def classify_images(images_dir, results_dic, model):
+    """
+    Creates classifier labels with classifier function, compares pet labels to 
+    the classifier labels, and adds the classifier label and the comparison of 
+    the labels to the results dictionary using the extend function. Be sure to
+    format the classifier labels so that they will match your pet image labels.
+    The format will include putting the classifier labels in all lower case 
+    letters and strip the leading and trailing whitespace characters from them.
+    For example, the Classifier function returns = 'Maltese dog, Maltese terrier, Maltese' 
+    so the classifier label = 'maltese dog, maltese terrier, maltese'.
+    Recall that dog names from the classifier function can be a string of dog 
+    names separated by commas when a particular breed of dog has multiple dog 
+    names associated with that breed. For example, you will find pet images of
+    a 'dalmatian'(pet label) and it will match to the classifier label 
+    'dalmatian, coach dog, carriage dog' if the classifier function correctly 
+    classified the pet images of dalmatians.
+     PLEASE NOTE: This function uses the classifier() function defined in 
+     classifier.py within this function. The proper use of this function is
+     in test_classifier.py Please refer to this program prior to using the 
+     classifier() function to classify images within this function 
+     Parameters: 
+      images_dir - The (full) path to the folder of images that are to be
+                   classified by the classifier function (string)
+      results_dic - Results Dictionary with 'key' as image filename and 'value'
+                    as a List. Where the list will contain the following items: 
+                  index 0 = pet image label (string)
+                --- where index 1 & index 2 are added by this function ---
+                  NEW - index 1 = classifier label (string)
+                  NEW - index 2 = 1/0 (int)  where 1 = match between pet image
+                    and classifer labels and 0 = no match between labels
+      model - Indicates which CNN model architecture will be used by the 
+              classifier function to classify the pet images,
+              values must be either: resnet alexnet vgg (string)
+     Returns:
+           None - results_dic is mutable data type so no return needed.         
+    """
+    
+    for key in results_dic:
+       
+       
+       model_label = ""
+
+       
+       pass
+              
+       
+       truth = results_dic[key][0]
+ 
+       
+       if truth in model_label:
+           results_dic[key][1]
+
+        
+       else:
+           results_dic[key][0]
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/get_input_args.py
+#                                                                             
+# PROGRAMMER: 
+# DATE CREATED:                                   
+# REVISED DATE: 
+# PURPOSE: Create a function that retrieves the following 3 command line inputs 
+#          from the user using the Argparse Python module. If the user fails to 
+#          provide some or all of the 3 inputs, then the default values are
+#          used for the missing inputs. Command Line Arguments:
+#     1. Image Folder as --dir with default value 'pet_images'
+#     2. CNN Model Architecture as --arch with default value 'vgg'
+#     3. Text File with Dog Names as --dogfile with default value 'dognames.txt'
+#
+##
+# Imports python modules
+import argparse
+
+
+def get_input_args():
+    """
+    Retrieves and parses the 3 command line arguments provided by the user when
+    they run the program from a terminal window. This function uses Python's 
+    argparse module to created and defined these 3 command line arguments. If 
+    the user fails to provide some or all of the 3 arguments, then the default 
+    values are used for the missing arguments. 
+    Command Line Arguments:
+      1. Image Folder as --dir with default value 'pet_images'
+      2. CNN Model Architecture as --arch with default value 'vgg'
+      3. Text File with Dog Names as --dogfile with default value 'dognames.txt'
+    This function returns these arguments as an ArgumentParser object.
+    Parameters:
+     None - simply using argparse module to create & store command line arguments
+    Returns:
+     parse_args() -data structure that stores the command line arguments object  
+    """
+    # Create Parse using ArgumentParser
+    parser = argparse.ArgumentParser()
+    # Create 3 command line arguments as mentioned above using add_argument() from ArguementParser method
+    parser.add_argument('--dir', type = str, default = 'pet_images/', 
+                    help = 'path to the folder of pet images') 
+    parser.add_argument('--arch', default = 'vgg' )
+    parser.add_argument('--dogfile', default = 'dognames.txt' )
+    # Replace None with parser.parse_args() parsed argument collection that 
+    # you created with this function 
+    return parser.parse_args()
+
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-revision/intropyproject-classify-pet-images/get_pet_labels.py
+#                                                                             
+# PROGRAMMER: 
+# DATE CREATED:                                  
+# REVISED DATE: 
+# PURPOSE: Create the function get_pet_labels that creates the pet labels from 
+#          the image's filename. This function inputs: 
+#           - The Image Folder as image_dir within get_pet_labels function and 
+#             as in_arg.dir for the function call within the main function. 
+#          This function creates and returns the results dictionary as results_dic
+#          within get_pet_labels function and as results within main. 
+#          The results_dic dictionary has a 'key' that's the image filename and
+#          a 'value' that's a list. This list will contain the following item
+#          at index 0 : pet image label (string).
+#
+##
+# Imports python modules
+from os import listdir
+
+# TODO 2: Define get_pet_labels function below please be certain to replace None
+#       in the return statement with results_dic dictionary that you create 
+#       with this function
+# 
+def get_pet_labels(image_dir):
+    """
+    Creates a dictionary of pet labels (results_dic) based upon the filenames 
+    of the image files. These pet image labels are used to check the accuracy 
+    of the labels that are returned by the classifier function, since the 
+    filenames of the images contain the true identity of the pet in the image.
+    Be sure to format the pet labels so that they are in all lower case letters
+    and with leading and trailing whitespace characters stripped from them.
+    (ex. filename = 'Boston_terrier_02259.jpg' Pet label = 'boston terrier')
+    Parameters:
+     image_dir - The (full) path to the folder of images that are to be
+                 classified by the classifier function (string)
+    Returns:
+      results_dic - Dictionary with 'key' as image filename and 'value' as a 
+      List. The list contains for following item:
+         index 0 = pet image label (string)
+    """
+    
+    in_files = listdir(image_dir)
+    
+    
+    results_dic = dict()
+   
+    
+    for idx in range(0, len(in_files), 1):
+       
+       
+       if in_files[idx][0] != ".":
+           
+                      pet_label = ""
+
+           
+           in_files[idx][0]
+        
+        
+           if in_files[idx] not in results_dic:
+              results_dic[in_files[idx]] = [pet_label]
+              
+           else:
+               print("** Warning: Duplicate files exist in directory:", 
+                     in_files[idx])
+    
+    
+    
+    
+    
+    
+    return results_dic 
+    
+
+                            
+        
+    
+    
+
+              
+            
+
+    
+     
+ 
+       
